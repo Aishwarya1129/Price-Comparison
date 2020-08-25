@@ -1,0 +1,152 @@
+
+import requests
+from bs4 import BeautifulSoup
+import requests
+from bs4 import BeautifulSoup
+?
+r=requests.get("https://www.flipkart.com/search?sid=tyy%2C4io&otracker=CLP_Filters&p%5B%5D=facets.serviceability%5B%5D%3Dfalse&p%5B%5D=facets.brand%255B%255D%3DApple&sort=popularity")
+c=r.content
+c
+soup=BeautifulSoup(c,"html.parser")
+all=soup.find_all("div",{"class":"_1UoZlX"})
+all
+ 
+d={}
+    d["Name"]=item.find("div",{"class":"_3wU53n"}).text
+
+l=[]
+for item in all:
+    d={}
+    d["Name"]=item.find("div",{"class":"_3wU53n"}).text
+    d["Price"]=item.find("div",{"class":"_1vC4OE _2rQ-NK"}).text
+    l.append(d)
+l
+import pandas
+df=pandas.DataFrame(l)
+df
+list_1=[]
+for item in df["Name"]:
+    try:
+        d={}
+        index_1=item.index('(')
+        n_1=item[:index_1]
+        print(n_1)
+        d=item[:index_1]
+    except:
+        None
+        d=item[:index_1]
+    list_1.append(d)
+    
+list_2=[]
+for item in df["Name"]:
+    d={}
+    try:
+        index_2=item.index(',')
+        n_2=item[index_2+1:].replace(')',"").replace(" ","")
+        print(n_2)
+        d=n_2
+    except:
+        None
+    list_2.append(d)
+    
+list_1
+list_2
+l2=[]
+for item in df["Price"]:
+    d={}
+    d["Price"]=item
+    l2.append(d)
+l2
+df_f1=pandas.DataFrame(list_1)
+df_f1
+df_f2=pandas.DataFrame(list_2)
+df_f2
+df_f3 =pandas.concat([df_f1, df_f2], axis=1, join='inner')
+df_f3
+df_f3.columns=['Name','Storage']
+df_f3
+df2=pandas.DataFrame(l2)
+df2
+df_concat = pandas.concat([df_f3, df2], axis=1, join='inner')
+df_concat
+df_concat['name_storage'] = df_concat['Name'] +'-' + df_concat['Storage'].map(str)
+df_concat
+df_flipkart=df_concat.drop_duplicates(subset ="name_storage")
+df_flipkart
+r=requests.get("https://www.amazon.in/s?i=electronics&bbn=1805560031&rh=n%3A976419031%2Cn%3A%21976420031%2Cn%3A1389401031%2Cn%3A1389432031%2Cn%3A1805560031%2Cp_6%3AA14CZOWI0VEHLG%7CA1P3OPO356Q9ZB%7CA2HIN95H5BP4BL%2Cp_89%3AApple&ref=mega_elec_s23_1_2_1_6",headers={'User-Agent': 'Chrome'})
+c=r.content
+soup=BeautifulSoup(c,"html.parser")
+all=soup.find_all("h5",{"class":"a-color-base s-line-clamp-4"})
+all
+l3=[]
+for item in all:
+    d={}
+    temp=item.find("span",{"class":"a-size-base-plus a-color-base a-text-normal"})
+    print(temp.text)
+    d["Name"]=temp.text
+    l3.append(d)
+l3
+df3=pandas.DataFrame(l3)
+df3
+list=[]
+for item in df3["Name"]:
+    try:
+        d={}
+        index1=item.index('(')
+        n1=item[:index1]
+        print(n1)
+        d=item[:index1]
+    except:
+        None
+        d=item[:index1]
+    list.append(d)
+    
+list3=[]
+for item in df3["Name"]:
+    try:
+        d={}
+        index2=item.index('(')
+        index3=item.index(')')
+        n2=item[index2+1:index3]
+        print(n2)
+        d=item[index2+1:index3]
+    except:
+        None
+        d=item[index2+1:index3]
+    list3.append(d)
+        
+?
+list
+list3
+df_1=pandas.DataFrame(list)
+df_1
+df_2=pandas.DataFrame(list3)
+df_2
+df_3=pandas.concat([df_1, df_2], axis=1, join='inner')
+df_3
+df_3.columns=['Name','Storage']
+df_3
+all=soup.find_all("span",{"data-a-color":"price"})
+all
+l4=[]
+for item in all:
+    d={}
+    d=item.find("span",{"class":"a-price-whole"}).text
+    print(item.find("span",{"class":"a-price-whole"}).text)
+    l4.append(d)
+?
+l4
+df4=pandas.DataFrame(l4)
+df4
+df4.columns=['Price']
+df4
+df_concat2 = pandas.concat([df_3, df4], axis=1, join='inner')
+df_concat2
+df_concat2['name_storage'] = df_concat2['Name'] +'-'+ df_concat2['Storage'].map(str)
+df_concat2
+df_amazon=df_concat2.drop_duplicates(subset ="name_storage")
+df_amazon
+df_comparison= pandas.merge(df_flipkart, df_amazon, how ='inner',on = 'name_storage',suffixes=('_flipkart', '_amazon'))
+df_comparison
+df_comparison.to_csv("Comparison3.csv")
+?
